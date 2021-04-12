@@ -1,6 +1,7 @@
 import { useState } from 'react';
-import { useDispatch } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { addContact } from '../../redux/actions';
+import { getContactsItems } from '../../redux/selectors';
 import s from './ContactForm.module.css';
 
 function ContactForm() {
@@ -21,10 +22,25 @@ function ContactForm() {
         return;
     }
   };
+
+  const contacts = useSelector(state => getContactsItems(state));
+
+  const isContsctExist = () => {
+    const normalizedFilter = name.toLowerCase();
+    return contacts.find(
+      contact => contact.name.toLowerCase() === normalizedFilter,
+    );
+  };
+
   const handleSubmit = e => {
     e.preventDefault();
     if (name.trim() === '' || number.trim() === '') {
       alert('Fill all fields!');
+      return;
+    }
+    const existContact = isContsctExist();
+    if (existContact) {
+      alert(`${existContact.name} is already in contacts.`);
       return;
     }
     dispatch(addContact({ name, number }));
