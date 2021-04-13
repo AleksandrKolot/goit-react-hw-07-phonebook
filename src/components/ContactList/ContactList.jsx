@@ -1,21 +1,17 @@
 import { useSelector, useDispatch } from 'react-redux';
-import { deleteContact } from '../../redux/actions';
+import { deleteContact, fetchContacts } from '../../redux/operations';
 import s from './ContactList.module.css';
 import PropTypes from 'prop-types';
+import { useEffect } from 'react';
 
 const ContactList = () => {
   const dispatch = useDispatch();
-  const onDeleteContact = id => dispatch(deleteContact(id));
 
-  const getContactList = state => {
-    const { filter, items } = state.contacts;
-    const normalizedFilter = filter.toLowerCase();
-
-    return items.filter(contact =>
-      contact.name.toLowerCase().includes(normalizedFilter),
-    );
-  };
   const contacts = useSelector(getContactList);
+
+  useEffect(() => {
+    dispatch(fetchContacts());
+  }, []);
 
   return (
     <table className={s.table}>
@@ -25,7 +21,7 @@ const ContactList = () => {
             <td>{name}</td>
             <td>{number}</td>
             <td>
-              <button type="button" onClick={() => onDeleteContact(id)}>
+              <button type="button" onClick={() => dispatch(deleteContact(id))}>
                 del
               </button>
             </td>
